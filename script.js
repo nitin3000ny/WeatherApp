@@ -1,105 +1,32 @@
-const apiKey = 'cbf695abb50ee416c866639a15088437';
+const Api_Key='cbf695abb50ee416c866639a15088437';
+const Button= document.querySelector('#check');
+Button.addEventListener('click',()=>{const city_name = document.getElementById('city_name').value.trim();
 
-document.getElementById('get-weather-btn').addEventListener('click', async () => {
-  const city = document.getElementById('city-input').value;
-  try {
-    const weatherData = await fetchWeather(city);
-    const forecastData = await fetchForecast(city);
-    displayWeather(weatherData, forecastData);
-  } catch (error) {
-    console.log('Error:', error);
-  }
-});
-
-async function fetchWeather(city) {
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Unable to fetch weather data.');
-  }
-
-  const data = await response.json();
-  return data;
-}
-
-async function fetchForecast(city) {
-  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Unable to fetch forecast data.');
-  }
-
-  const data = await response.json();
-  return data;
-}
-
-function displayWeather(weatherData, forecastData) {
-  const weatherInfo = document.getElementById('weather-info');
-  weatherInfo.innerHTML = '';
-
-  // Display current weather
-  const currentWeatherCard = createCurrentWeatherCard(weatherData);
-  weatherInfo.appendChild(currentWeatherCard);
-
-  // Display forecast
-  for (let i = 0; i < forecastData.list.length; i += 8) {
-    const forecast = forecastData.list[i];
-    const forecastCard = createForecastCard(forecast);
-    weatherInfo.appendChild(forecastCard);
-  }
-}
-
-function createCurrentWeatherCard(data) {
-  const card = document.createElement('div');
-  card.className = 'card';
-
-  const temperature = data.main.temp;
-  const weatherDescription = data.weather[0].description;
-  const weatherIcon = data.weather[0].icon;
-
-  const temperatureElement = document.createElement('h3');
-  temperatureElement.textContent = `${temperature}°C`;
-  card.appendChild(temperatureElement);
-
-  const iconElement = document.createElement('img');
-  iconElement.src = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
-  iconElement.alt = weatherDescription;
-  card.appendChild(iconElement);
-
-  const descriptionElement = document.createElement('p');
-  descriptionElement.textContent = weatherDescription;
-  card.appendChild(descriptionElement);
-
-  return card;
-}
-
-function createForecastCard(data) {
-  const card = document.createElement('div');
-  card.className = 'card';
-
-  const date = new Date(data.dt * 1000);
-  const temperature = data.main.temp;
-  const weatherDescription = data.weather[0].description;
-  const weatherIcon = data.weather[0].icon;
-
-  const dateElement = document.createElement('h3');
-  dateElement.textContent = date.toDateString();
-  card.appendChild(dateElement);
-
-  const iconElement = document.createElement('img');
-  iconElement.src = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
-  iconElement.alt = weatherDescription;
-  card.appendChild(iconElement);
-
-  const temperatureElement = document.createElement('p');
-  temperatureElement.textContent = `${temperature}°C`;
-  card.appendChild(temperatureElement);
-
-  const descriptionElement = document.createElement('p');
-  descriptionElement.textContent = weatherDescription;
-  card.appendChild(descriptionElement);
-
-  return card;
-}
+    getgeo(Api_Key,city_name);
+    
+})
+ async function getgeo(Api_Key,city_name){
+const geoUrl=`http://api.openweathermap.org/geo/1.0/direct?q=${city_name}&limit=1&appid=${Api_Key}`;
+const data=await fetch(geoUrl);
+const GeoData=await data.json();
+lat = GeoData[0].lat;
+lon=GeoData[0].lon;
+fetchWeather(lat,lon);
+ }
+ async function  fetchWeather(lati,long){
+const weatherUrl=`https://api.openweathermap.org/data/2.5/weather?lat=${lati}&lon=${long}&appid=${Api_Key}&units=metric`;
+const getData=await fetch(weatherUrl);
+const dataBack=await getData.json();
+console.log(dataBack);
+const icon =dataBack.weather[0].icon;
+const temp=dataBack.main.temp;
+const feelsLike=dataBack.main.feels_like;
+const minTemp=dataBack.main.temp_min;
+const maxTemp=dataBack.main.temp_max;
+const currentWeather=dataBack.weather[0].main;
+const desc=dataBack.weather[0].decription;
+const imag=document.querySelector('#weather-conditions');
+imag.src=`https://openweathermap.org/img/wn/${icon}@2x.png`;
+// main: {temp: 24.54, feels_like: 24.46, temp_min: 20.89, temp_max: 27.22, pressure: 1018, …}
+// DisplayWeather()
+ }
